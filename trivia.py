@@ -14,8 +14,20 @@ class IsWinner:
         return not number_of_coins == 6
 
 
+class AskQuestion():
+    def __init__(self, game):
+        self.game = game
+
+    def ask(self, current_category):
+        if current_category == 'Pop': print(self.game.pop_questions.pop(0))
+        if current_category == 'Science': print(self.game.science_questions.pop(0))
+        if current_category == 'Sports': print(self.game.sports_questions.pop(0))
+        if current_category == 'Rock': print(self.game.rock_questions.pop(0))
+
+
 class Game:
     def __init__(self):
+        self.ask_question = AskQuestion(self)
         self.players = []
         self.places = [0] * 6
         self.purses = [0] * 6
@@ -93,10 +105,7 @@ class Game:
             self._ask_question()
 
     def _ask_question(self):
-        if self._current_category == 'Pop': print(self.pop_questions.pop(0))
-        if self._current_category == 'Science': print(self.science_questions.pop(0))
-        if self._current_category == 'Sports': print(self.sports_questions.pop(0))
-        if self._current_category == 'Rock': print(self.rock_questions.pop(0))
+        self.ask_question.ask(self._current_category)
 
     @property
     def _current_category(self):
