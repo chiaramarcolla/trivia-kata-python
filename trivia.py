@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+class DummyClass:
+    def __init__(self):
+        self.bad_players = []
+        self.cheaters = []
+        self.losers = []
+
+    def create_who_is_a_cheater(self,index):
+        return "Cheater is %s" % index
+
 class Game:
     def __init__(self):
         self.players = []
@@ -20,6 +29,8 @@ class Game:
             self.science_questions.append("Science Question %s" % i)
             self.sports_questions.append("Sports Question %s" % i)
             self.rock_questions.append(self.create_rock_question(i))
+
+        self.badgame = DummyClass()
 
     def create_rock_question(self, index):
         return "Rock Question %s" % index
@@ -159,8 +170,20 @@ if __name__ == '__main__':
     game.add('Pat')
     game.add('Sue')
 
+    rolls = []
+    i = 0
     while True:
-        game.roll(randrange(5) + 1)
+        current_roll = randrange(5) + 1
+        game.roll(current_roll)
+
+        rolls[i] = current_roll
+        i=i+1
+        if i == 2:
+            i = 0
+
+        if game.players == 'Chet':
+            if (rolls[0] == 6 and rolls[1] == 6) :
+                    game.badgame.create_who_is_a_cheater(game.players)
 
         if randrange(9) == 7:
             not_a_winner = game.wrong_answer()
