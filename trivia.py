@@ -1,13 +1,66 @@
 #!/usr/bin/env python3
 
-class DummyClass:
-    def __init__(self):
-        self.bad_players = []
-        self.cheaters = []
-        self.losers = []
+class TheWinner:
+    def __init__(self, game):
+        self.players = []
+        self.purses = [0] * 6
+        self.in_penalty_box = [0] * 6
 
-    def create_who_is_a_cheater(self,index):
-        return "Cheater is %s" % index
+        self.current_player = 0
+        self.is_getting_out_of_penalty_box = False
+        self.game = game
+
+    def was_correctly_answered(self):
+        if self.in_penalty_box[self.current_player]:
+            if self.is_getting_out_of_penalty_box:
+                print('Answer was correct!!!!')
+                self.purses[self.current_player] += 1
+                print(self.players[self.current_player] + \
+                      ' now has ' + \
+                      str(self.purses[self.current_player]) + \
+                      ' Gold Coins.')
+
+                winner = self._did_player_win()
+                self.current_player += 1
+                if self.current_player == len(self.players): self.current_player = 0
+
+                return winner
+            else:
+                self.current_player += 1
+                if self.current_player == len(self.players): self.current_player = 0
+                return True
+
+
+
+        else:
+
+            print("Answer was corrent!!!!")
+            self.purses[self.current_player] += 1
+            print(self.players[self.current_player] + \
+                  ' now has ' + \
+                  str(self.purses[self.current_player]) + \
+                  ' Gold Coins.')
+
+            winner = self._did_player_win()
+            self.current_player += 1
+            if self.current_player == len(self.players): self.current_player = 0
+
+            return winner
+
+    def wrong_answer(self):
+        print('Question was incorrectly answered')
+        print(self.players[self.current_player] + " was sent to the penalty box")
+        self.in_penalty_box[self.current_player] = True
+
+        self.current_player += 1
+        if self.current_player == len(self.players): self.current_player = 0
+        return True
+
+    def _did_player_win(self):
+        return not (self.game.purses[self.current_player] == 6)
+
+
+
 
 class Game:
     def __init__(self):
@@ -30,7 +83,7 @@ class Game:
             self.sports_questions.append("Sports Question %s" % i)
             self.rock_questions.append(self.create_rock_question(i))
 
-        self.badgame = DummyClass()
+        self.winner = TheWinner(self)
 
     def create_rock_question(self, index):
         return "Rock Question %s" % index
@@ -104,54 +157,7 @@ class Game:
         if self.places[self.current_player] == 10: return 'Sports'
         return 'Rock'
 
-    def was_correctly_answered(self):
-        if self.in_penalty_box[self.current_player]:
-            if self.is_getting_out_of_penalty_box:
-                print('Answer was correct!!!!')
-                self.purses[self.current_player] += 1
-                print(self.players[self.current_player] + \
-                    ' now has ' + \
-                    str(self.purses[self.current_player]) + \
-                    ' Gold Coins.')
 
-                winner = self._did_player_win()
-                self.current_player += 1
-                if self.current_player == len(self.players): self.current_player = 0
-
-                return winner
-            else:
-                self.current_player += 1
-                if self.current_player == len(self.players): self.current_player = 0
-                return True
-
-
-
-        else:
-
-            print("Answer was corrent!!!!")
-            self.purses[self.current_player] += 1
-            print(self.players[self.current_player] + \
-                ' now has ' + \
-                str(self.purses[self.current_player]) + \
-                ' Gold Coins.')
-
-            winner = self._did_player_win()
-            self.current_player += 1
-            if self.current_player == len(self.players): self.current_player = 0
-
-            return winner
-
-    def wrong_answer(self):
-        print('Question was incorrectly answered')
-        print(self.players[self.current_player] + " was sent to the penalty box")
-        self.in_penalty_box[self.current_player] = True
-
-        self.current_player += 1
-        if self.current_player == len(self.players): self.current_player = 0
-        return True
-
-    def _did_player_win(self):
-        return not (self.purses[self.current_player] == 6)
 
 
 from random import randrange
@@ -176,18 +182,9 @@ if __name__ == '__main__':
         current_roll = randrange(5) + 1
         game.roll(current_roll)
 
-        rolls[i] = current_roll
-        i=i+1
-        if i == 2:
-            i = 0
-
-        if game.players == 'Chet':
-            if (rolls[0] == 6 and rolls[1] == 6) :
-                    game.badgame.create_who_is_a_cheater(game.players)
-
         if randrange(9) == 7:
-            not_a_winner = game.wrong_answer()
+            not_a_winner = game.winner.wrong_answer()
         else:
-            not_a_winner = game.was_correctly_answered()
+            not_a_winner = game.winner.was_correctly_answered()
 
         if not not_a_winner: break
