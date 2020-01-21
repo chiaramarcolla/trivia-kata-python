@@ -13,33 +13,27 @@ class IsWinner:
     def isNotAWinner(self, number_of_coins):
         return not number_of_coins == 6
 
+class CurrentCategory:
+    def current_category(self, current_player_place):
+        if current_player_place == 0: return 'Pop'
+        if current_player_place == 4: return 'Pop'
+        if current_player_place == 8: return 'Pop'
+        if current_player_place == 1: return 'Science'
+        if current_player_place == 5: return 'Science'
+        if current_player_place == 9: return 'Science'
+        if current_player_place == 2: return 'Sports'
+        if current_player_place == 6: return 'Sports'
+        if current_player_place == 10: return 'Sports'
+        return 'Rock'
 
-class AskQuestion():
-    def __init__(self, game):
-        self.game = game
 
-    def ask(self, current_category):
-        if current_category == 'Pop': print(self.game.pop_questions.pop(0))
-        if current_category == 'Science': print(self.game.science_questions.pop(0))
-        if current_category == 'Sports': print(self.game.sports_questions.pop(0))
-        if current_category == 'Rock': print(self.game.rock_questions.pop(0))
-
-
-class Game:
+class AskQuestion:
     def __init__(self):
-        self.ask_question = AskQuestion(self)
-        self.players = []
-        self.places = [0] * 6
-        self.purses = [0] * 6
-        self.in_penalty_box = [0] * 6
-
         self.pop_questions = []
         self.science_questions = []
         self.sports_questions = []
         self.rock_questions = []
 
-        self.current_player = 0
-        self.is_getting_out_of_penalty_box = False
 
         for i in range(50):
             self.pop_questions.append("Pop Question %s" % i)
@@ -47,12 +41,37 @@ class Game:
             self.sports_questions.append("Sports Question %s" % i)
             self.rock_questions.append(self.create_rock_question(i))
 
+
+    def create_rock_question(self, index):
+        return "Rock Question %s" % index
+
+    def ask(self, current_category):
+        if current_category == 'Pop': print(self.pop_questions.pop(0))
+        if current_category == 'Science': print(self.science_questions.pop(0))
+        if current_category == 'Sports': print(self.sports_questions.pop(0))
+        if current_category == 'Rock': print(self.rock_questions.pop(0))
+
+
+class Game:
+    def __init__(self):
+        self.current_category = CurrentCategory()
+        self.ask_question = AskQuestion()
+        self.players = []
+        self.places = [0] * 6
+        self.purses = [0] * 6
+        self.in_penalty_box = [0] * 6
+
+
+        self.current_player = 0
+        self.is_getting_out_of_penalty_box = False
+
+
+
         self.badgame = DummyClass()
 
         self.is_winner = IsWinner()
 
-    def create_rock_question(self, index):
-        return "Rock Question %s" % index
+
 
     def is_playable(self):
         return self.how_many_players >= 2
@@ -109,16 +128,8 @@ class Game:
 
     @property
     def _current_category(self):
-        if self.places[self.current_player] == 0: return 'Pop'
-        if self.places[self.current_player] == 4: return 'Pop'
-        if self.places[self.current_player] == 8: return 'Pop'
-        if self.places[self.current_player] == 1: return 'Science'
-        if self.places[self.current_player] == 5: return 'Science'
-        if self.places[self.current_player] == 9: return 'Science'
-        if self.places[self.current_player] == 2: return 'Sports'
-        if self.places[self.current_player] == 6: return 'Sports'
-        if self.places[self.current_player] == 10: return 'Sports'
-        return 'Rock'
+        current_player_place = self.places[self.current_player]
+        return self.current_category.current_category(current_player_place)
 
     def was_correctly_answered(self):
         if self.in_penalty_box[self.current_player]:
